@@ -84,6 +84,10 @@ defmodule ACL do
         raise ArgumentError, message: "ACLs must have the same IP version"
     end
   end
+  @spec concat([ACL.t]) :: ACL.t
+  def concat(acls) do
+    acls |> Enum.reduce(ACL.new(4), fn(acl, acc) -> concat(acc, acl) end)
+  end
 
   defp flat_zip(list1, list2) do
     list1
