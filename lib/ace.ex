@@ -147,38 +147,38 @@ defimpl String.Chars, for: ACE do
   def to_string(ace) do
     action = ACE.action(ace)
     [ip_values, ip_masks, l4_values, l4_masks] = ACE.values(ace)
-      |> Enum.zip(ACE.masks ace)
-      |> Enum.map(&(Tuple.to_list &1))
-      |> List.flatten
+    |> Enum.zip(ACE.masks ace)
+    |> Enum.map(&(Tuple.to_list &1))
+    |> List.flatten
     src = ip_values
-      |> PCI.IP.source
-      |> IP.IPv4Addr.new
+    |> PCI.IP.source
+    |> IP.IPv4Addr.new
     dst = ip_values
-      |> PCI.IP.destination
-      |> IP.IPv4Addr.new
+    |> PCI.IP.destination
+    |> IP.IPv4Addr.new
     smask = ip_masks
-      |> PCI.IP.source
-      |> (fn s -> IP.invert_mask s end).()
-      |> IP.IPv4Addr.new
+    |> PCI.IP.source
+    |> IP.invert_mask
+    |> IP.IPv4Addr.new
     dmask = ip_masks
-      |> PCI.IP.destination
-      |> (fn s -> IP.invert_mask s end).()
-      |> IP.IPv4Addr.new
+    |> PCI.IP.destination
+    |> IP.invert_mask
+    |> IP.IPv4Addr.new
 
     case ACE.ip_protocol(ace) do
       :icmp ->
         type = l4_values
-          |> PCI.ICMP.type
-          |> PCI.bits_to_integer
+        |> PCI.ICMP.type
+        |> PCI.bits_to_integer
         code = l4_values
-          |> PCI.ICMP.code
-          |> PCI.bits_to_integer
+        |> PCI.ICMP.code
+        |> PCI.bits_to_integer
         tmask = l4_masks
-          |> PCI.ICMP.type
-          |> PCI.bits_to_integer
+        |> PCI.ICMP.type
+        |> PCI.bits_to_integer
         cmask = l4_masks
-          |> PCI.ICMP.code
-          |> PCI.bits_to_integer
+        |> PCI.ICMP.code
+        |> PCI.bits_to_integer
         
         case tmask do
           0x0 ->
@@ -193,17 +193,17 @@ defimpl String.Chars, for: ACE do
         end
       :tcp ->
         spt = l4_values
-          |> PCI.TCP.source
-          |> PCI.bits_to_integer
+        |> PCI.TCP.source
+        |> PCI.bits_to_integer
         dpt = l4_values
-          |> PCI.TCP.destination
-          |> PCI.bits_to_integer
+        |> PCI.TCP.destination
+        |> PCI.bits_to_integer
         sptmask = l4_masks
-          |> PCI.TCP.source
-          |> PCI.bits_to_integer
+        |> PCI.TCP.source
+        |> PCI.bits_to_integer
         dptmask = l4_masks
-          |> PCI.TCP.destination
-          |> PCI.bits_to_integer
+        |> PCI.TCP.destination
+        |> PCI.bits_to_integer
 
         case sptmask do
           0x0 ->
@@ -223,17 +223,17 @@ defimpl String.Chars, for: ACE do
         end
       :udp ->
         spt = l4_values
-          |> PCI.UDP.source
-          |> PCI.bits_to_integer
+        |> PCI.UDP.source
+        |> PCI.bits_to_integer
         dpt = l4_values
-          |> PCI.UDP.destination
-          |> PCI.bits_to_integer
+        |> PCI.UDP.destination
+        |> PCI.bits_to_integer
         sptmask = l4_masks
-          |> PCI.UDP.source
-          |> PCI.bits_to_integer
+        |> PCI.UDP.source
+        |> PCI.bits_to_integer
         dptmask = l4_masks
-          |> PCI.UDP.destination
-          |> PCI.bits_to_integer
+        |> PCI.UDP.destination
+        |> PCI.bits_to_integer
 
         case sptmask do
           0x0 ->
