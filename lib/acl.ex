@@ -91,9 +91,9 @@ defmodule ACL do
 
   defp flat_zip(list1, list2) do
     list1
-      |> Enum.zip(list2)
-      |> Enum.map(&(Tuple.to_list &1))
-      |> List.flatten
+    |> Enum.zip(list2)
+    |> Enum.map(&(Tuple.to_list &1))
+    |> List.flatten
   end
 
   @spec interleave(ACL.t, ACL.t) :: ACL.t
@@ -101,9 +101,11 @@ defmodule ACL do
     case ip_version(acl1) / ip_version(acl2) do
       1.0 ->
         interleaved_aces = aces(acl1) |> flat_zip(aces acl2)
+
         remaining = [aces(acl1), aces(acl2)]
-          |> Enum.max_by(fn l -> length l end)
-          |> Enum.drop(div length(interleaved_aces), 2)
+        |> Enum.max_by(fn l -> length l end)
+        |> Enum.drop(div length(interleaved_aces), 2)
+
         acl1 |> aces(interleaved_aces ++ remaining)
       _ ->
         raise ArgumentError, message: "ACLs must have the same IP version"
@@ -207,12 +209,12 @@ defimpl String.Chars, for: ACL do
     end
 
     acl_name = acl
-      |> ACL.name
-      |> String.downcase
-      |> String.replace(" ", "_")
+    |> ACL.name
+    |> String.downcase
+    |> String.replace(" ", "_")
 
     ([base_str <> " access-list extended " <> acl_name, "\n"]
       ++ (for ace <- ACL.aces(acl), do: "  #{ace}\n"))
-      |> Enum.join
+    |> Enum.join
   end
 end

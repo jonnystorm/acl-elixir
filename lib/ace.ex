@@ -131,10 +131,27 @@ defmodule ACE do
     [ip_value, ip_proto_value] = values(ace)
     [ip_mask, ip_proto_mask] = masks(ace)
 
-    ACE.new(ip_version(ace), action(ace), ip_protocol(ace),
-      [PCIProto.reflect(ip_value), PCIProto.reflect(ip_proto_value)],
-      [PCIProto.reflect(ip_mask), PCIProto.reflect(ip_proto_mask)]
-    )
+    case ip_protocol(ace) do
+      :icmp ->
+        type_value = PCI.ICMP.type(ip_proto_value)
+        type_mask = PCI.ICMP.type(ip_proto_mask)
+
+        if type_value == <<8>> do
+          new_type_value = Vector.bit_and(<<0>>, type_mask)
+        else
+          new_type_value = Vector.bit_and(<<8>>, type_mask)
+        end
+
+        ACE.new(ip_version(ace), action(ace), ip_protocol(ace),
+          [PCIProto.reflect(ip_value), PCI.ICMP.new(new_type_value, <<0>>)],
+          [PCIProto.reflect(ip_mask), ip_proto_mask]
+        )
+      _ ->
+        ACE.new(ip_version(ace), action(ace), ip_protocol(ace),
+          [PCIProto.reflect(ip_value), PCIProto.reflect(ip_proto_value)],
+          [PCIProto.reflect(ip_mask), PCIProto.reflect(ip_proto_mask)]
+        )
+    end
   end
 end
 

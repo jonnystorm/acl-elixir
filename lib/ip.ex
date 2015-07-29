@@ -38,8 +38,8 @@ defmodule IP do
       when is_binary(string) and is_binary(characters) do
     char_list = :binary.bin_to_list(characters)
     string
-      |> :binary.bin_to_list
-      |> Enum.all?(&(&1 in char_list))
+    |> :binary.bin_to_list
+    |> Enum.all?(&(&1 in char_list))
   end
 
   defp ip_proto_num_to_kw_map do
@@ -74,8 +74,8 @@ defmodule IP do
   @spec ip_proto_keyword_to_number(String.t) :: 0..255
   def ip_proto_keyword_to_number(keyword) when is_binary(keyword) do
     key = keyword
-      |> String.downcase
-      |> String.to_atom
+    |> String.downcase
+    |> String.to_atom
 
     ip_proto_kw_to_num_map[key]
   end
@@ -98,10 +98,10 @@ defmodule IP do
   @spec prefix_to_binary(String.t) :: {<<_::4*8>>, <<_::4*8>>} | {<<_::16*8>>, <<_::16*8>>}
   def prefix_to_binary(prefix) when is_binary(prefix) do
     prefix
-      |> IP.prefix_to_ip
-      |> Tuple.to_list
-      |> Enum.map(fn ip -> IP.Addr.address(ip) end)
-      |> List.to_tuple
+    |> IP.prefix_to_ip
+    |> Tuple.to_list
+    |> Enum.map(fn ip -> IP.Addr.address(ip) end)
+    |> List.to_tuple
   end
 
   defmodule IPv4Addr do
@@ -138,9 +138,9 @@ defmodule IP do
       case is_ip_string(string) do
         true ->
           ip = string
-            |> :binary.split(".", [:global])
-            |> Enum.map(&(String.to_integer &1))
-            |> :binary.list_to_bin
+          |> :binary.split(".", [:global])
+          |> Enum.map(&(String.to_integer &1))
+          |> :binary.list_to_bin
 
           {:ok, ip}
         false ->
@@ -171,8 +171,9 @@ defmodule IP do
     @spec expand_ip_string(String.t) :: String.t
     def expand_ip_string(string) when is_binary(string) do
       sep_count = string
-        |> :binary.split(":", [:global])
-        |> length
+      |> :binary.split(":", [:global])
+      |> length
+
       zero_word_count = 8 - sep_count + 1
 
       case :binary.split(string, "::", [:global]) do
@@ -193,8 +194,8 @@ defmodule IP do
     @spec is_ip_string(String.t) :: boolean
     def is_ip_string(string) when is_binary(string) do
       words = string
-        |> expand_ip_string
-        |> :binary.split(":", [:global])
+      |> expand_ip_string
+      |> :binary.split(":", [:global])
 
       IP.contains_only?(string, "0123456789abcdefABCDEF:")
         and length(words) == 8
@@ -204,20 +205,22 @@ defmodule IP do
     def is_ip_string(_), do: false
 
     @spec integer_to_bytes(integer) :: <<_ :: 8>>
+    def integer_to_bytes(0) do
+      <<0>>
+    end
     def integer_to_bytes(int) when is_integer(int) do
-      if int == 0, do: <<0>>
       int
-        |> Stream.unfold(fn 0 -> nil; x -> {rem(x, 256), div(x, 256)} end)
-        |> Enum.to_list
-        |> Enum.reverse
-        |> :binary.list_to_bin
+      |> Stream.unfold(fn 0 -> nil; x -> {rem(x, 256), div(x, 256)} end)
+      |> Enum.to_list
+      |> Enum.reverse
+      |> :binary.list_to_bin
     end
 
     defp string_to_byteword(string, base) do
       string
-        |> String.to_integer(base)
-        |> integer_to_bytes
-        |> String.rjust(2, 0)
+      |> String.to_integer(base)
+      |> integer_to_bytes
+      |> String.rjust(2, 0)
     end
 
     defp _string_to_ip(<<>>, {cur_word_str, acc}) do
@@ -266,9 +269,9 @@ defimpl String.Chars, for: IP.IPv4Addr do
   @spec to_string(IP.IPv4Addr.t) :: String.t
   def to_string(ipv4) do
     ipv4
-      |> IP.Addr.address
-      |> :binary.bin_to_list
-      |> Enum.join(".")
+    |> IP.Addr.address
+    |> :binary.bin_to_list
+    |> Enum.join(".")
   end
 end
 
@@ -278,9 +281,9 @@ defimpl String.Chars, for: IP.IPv6Addr do
   @spec to_string(IP.IPv6Addr.t) :: String.t
   def to_string(ipv6) do
     ipv6
-      |> IP.Addr.address
-      |> :binary.bin_to_list
-      |> Enum.join(":")
-      |> String.replace(~r/(0:)+/, ":")
+    |> IP.Addr.address
+    |> :binary.bin_to_list
+    |> Enum.join(":")
+    |> String.replace(~r/(0:)+/, ":")
   end
 end
