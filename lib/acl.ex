@@ -135,10 +135,10 @@ defmodule ACL do
     append_icmp_ace(acl, :permit, source, destination, :any, :any)
   end
   def permit(acl, :tcp, source, destination) do
-    append_tcp_ace(acl, :tcp, source, :any, destination, :any)
+    append_tcp_ace(acl, :permit, source, :any, destination, :any)
   end
   def permit(acl, :udp, source, destination) do
-    append_udp_ace(acl, :udp, source, :any, destination, :any)
+    append_udp_ace(acl, :permit, source, :any, destination, :any)
   end
 
   def permit(acl, :tcp, source, [eq: source_port], destination) do

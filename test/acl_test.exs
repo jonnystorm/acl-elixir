@@ -9,8 +9,8 @@ defmodule ACLTest do
 
   test "to_string returns correct string from ACL" do
     test_acl = ACL.new(4, "Test ACL")
-      |> permit(:tcp, "192.0.2.0/24", host("192.0.2.4"), eq(443))
-      |> deny(:icmp, host("192.0.2.1"), host("192.0.2.4"))
+    |> permit(:tcp, "192.0.2.0/24", host("192.0.2.4"), eq(443))
+    |> deny(:icmp, host("192.0.2.1"), host("192.0.2.4"))
   
     assert to_string(test_acl) == ("""
     ip access-list extended test_acl
@@ -22,9 +22,10 @@ defmodule ACLTest do
   test "append returns correct ACL" do
     test_acl = ACL.new(4, "Test ACL")
     test_ace = ACE.icmp(4, :permit, "192.0.2.1/32", "192.0.2.4/32", :any, :any)
+
     result = test_acl
-      |> ACL.append(test_ace)
-      |> ACL.aces
+    |> ACL.append(test_ace)
+    |> ACL.aces
 
     assert result == [test_ace]
   end
@@ -41,9 +42,10 @@ defmodule ACLTest do
     test_ace = ACE.tcp(4, :permit, "192.0.2.0/24", :any, "192.0.2.4/32", 443)
     test_acl1 = ACL.new(4, "Test ACL 1", [test_ace])
     test_acl2 = ACL.new(4, "Test ACL 2", [test_ace])
+
     result = test_acl1
-      |> ACL.concat(test_acl2)
-      |> ACL.aces
+    |> ACL.concat(test_acl2)
+    |> ACL.aces
 
     assert result == [test_ace, test_ace]
   end
@@ -61,9 +63,10 @@ defmodule ACLTest do
     test_ace2 = ACE.icmp(4, :deny, "192.0.2.1/32", "192.0.2.4/32", :any, :any)
     test_acl1 = ACL.new(4, "Test ACL 1", [test_ace1, test_ace1])
     test_acl2 = ACL.new(4, "Test ACL 2", [test_ace2])
+
     result = test_acl1
-      |> ACL.interleave(test_acl2)
-      |> ACL.aces
+    |> ACL.interleave(test_acl2)
+    |> ACL.aces
 
     assert result == [test_ace1, test_ace2, test_ace1]
   end
