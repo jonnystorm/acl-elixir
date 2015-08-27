@@ -157,8 +157,14 @@ defmodule ACL do
   def permit(acl, :icmp, source, destination, type, code) do
     append_icmp_ace(acl, :permit, source, destination, type, code)
   end
+  def permit(acl, :tcp, source, [eq: source_port], destination, [eq: destination_port]) do
+    append_tcp_ace(acl, :permit, source, source_port, destination, destination_port)
+  end
   def permit(acl, :tcp, source, source_port, destination, destination_port) do
     append_tcp_ace(acl, :permit, source, source_port, destination, destination_port)
+  end
+  def permit(acl, :udp, source, [eq: source_port], destination, [eq: destination_port]) do
+    append_udp_ace(acl, :permit, source, source_port, destination, destination_port)
   end
   def permit(acl, :udp, source, source_port, destination, destination_port) do
     append_udp_ace(acl, :permit, source, source_port, destination, destination_port)
@@ -190,8 +196,14 @@ defmodule ACL do
   def deny(acl, :icmp, source, destination, type, code) do
     append_icmp_ace(acl, :deny, source, destination, type, code)
   end
+  def deny(acl, :tcp, source, [eq: source_port], destination, [eq: destination_port]) do
+    append_tcp_ace(acl, :deny, source, source_port, destination, destination_port)
+  end
   def deny(acl, :tcp, source, source_port, destination, destination_port) do
     append_tcp_ace(acl, :deny, source, source_port, destination, destination_port)
+  end
+  def deny(acl, :udp, source, [eq: source_port], destination, [eq: destination_port]) do
+    append_udp_ace(acl, :deny, source, source_port, destination, destination_port)
   end
   def deny(acl, :udp, source, source_port, destination, destination_port) do
     append_udp_ace(acl, :deny, source, source_port, destination, destination_port)
