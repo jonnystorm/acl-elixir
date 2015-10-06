@@ -11,7 +11,7 @@ defmodule ACL.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :linear_ex]]
   end
 
   defp deps do
